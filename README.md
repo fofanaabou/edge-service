@@ -14,6 +14,6 @@ Le **Spring Gateway Service** est une passerelle d'API (API Gateway) basée sur 
 
 ## Prérequis
 
-- **Java 11+**
+- **Java 17+**
 - **Maven 3.6+**
-- **Spring Boot 2.4+**
+- **Spring Boot 3.3+**
