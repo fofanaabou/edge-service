@@ -15,10 +15,10 @@ spec:
         app: edge-service
     spec:
       imagePullSecrets:
-        - name: regcred
+        - name: registry-secret
       containers:
         - name: edge-service
-          image: fofanaabou/edge-service
+          image: ghcr.io/fofanaabou/edge-service
           imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:
