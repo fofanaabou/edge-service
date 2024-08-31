@@ -1,4 +1,21 @@
 spring:
+  application:
+    name: edge-service
+  lifecycle:
+    timeout-per-shutdown-phase: 15s
+  session:
+    redis:
+      namespace: polar:edge
+      repository-type: default
+    timeout: 10m
+
+  data:
+    redis:
+      connect-timeout: 2s
+      host: localhost
+      port: 6379
+      timeout: 1s
+
   security:
     oauth2:
       client:
@@ -10,15 +27,6 @@ spring:
         provider:
           keycloak:
             issuer-uri: http://localhost:8085/realms/PolarBookshop
-  session:
-    redis:
-      namespace: polar:edge
-      repository-type: default
-    timeout: 10m
-  application:
-    name: edge-service
-  lifecycle:
-    timeout-per-shutdown-phase: 15s
   cloud:
     config:
       uri: http://localhost:8888
@@ -32,6 +40,33 @@ spring:
         multiplier: 1.1
       enabled: false
     gateway:
+      default-filters:
+        - SaveSession
+        - TokenRelay
+        - name: Retry
+          args:
+            retries: 3
+            methods: GET
+            series: SERVER_ERROR
+            exceptions: java.io.IOException, java.util.concurrent.TimeoutException
+            backoff:
+              firstBackoff: 50ms
+              maxBackoff: 500ms
+              factor: 2
+              basedOnPreviousValue: false
+        - name: RequestRateLimiter
+          args:
+            redis-rate-limiter:
+              replenishRate: 10
+              burstCapacity: 20
+              requestedTokens: 1
+      httpclient:
+        connect-timeout: 2000
+        response-timeout: 5s
+        pool:
+          type: elastic
+          max-idle-time: 15s
+          max-life-time: 60s
       routes:
         - id: catalog-route
           uri: ${CATALOG_SERVICE_URL:http://localhost:8081}/books
@@ -54,39 +89,6 @@ spring:
           uri: ${SPA_URL:http://localhost:8084}
           predicates:
             - Path=/,/*.css,/*js, favicon.ico
-      httpclient:
-        connect-timeout: 2000
-        response-timeout: 5s
-        pool:
-          type: elastic
-          max-idle-time: 15s
-          max-life-time: 60s
-      default-filters:
-        - SaveSession
-        - TokenRelay
-        - name: Retry
-          args:
-            retries: 3
-            methods: GET
-            series: SERVER_ERROR
-            exceptions: java.io.IOException, java.util.concurrent.TimeoutException
-            backoff:
-              firstBackoff: 50ms
-              maxBackoff: 500ms
-              factor: 2
-              basedOnPreviousValue: false
-        - name: RequestRateLimiter
-          args:
-            redis-rate-limiter:
-              replenishRate: 10
-              burstCapacity: 20
-              requestedTokens: 1
-  data:
-    redis:
-      connect-timeout: 2s
-      host: localhost
-      port: 6379
-      timeout: 1s
 
 server:
   port: 9000
@@ -108,7 +110,6 @@ resilience4j:
       default:
         timeout-duration:
           seconds: 5
-
 logging:
   level:
     io.github.resilience4j: DEBUG
