@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
-import java.util.List;
-
 @RestController
 @RequestMapping
 public class UserController {
@@ -33,6 +31,7 @@ public class UserController {
         return new User(oidcUser.getPreferredUsername(),
                 oidcUser.getGivenName(),
                 oidcUser.getFamilyName(),
-                List.of("employee", "customer"));
+                oidcUser.getClaimAsStringList("roles")
+        );
     }
 }

@@ -60,6 +60,7 @@ class UserControllerTest {
                     token.claim(StandardClaimNames.PREFERRED_USERNAME, user.username());
                     token.claim(StandardClaimNames.GIVEN_NAME, user.firstName());
                     token.claim(StandardClaimNames.FAMILY_NAME, user.lastName());
+                    token.claim("roles", user.roles());
                 });
     }
 }
