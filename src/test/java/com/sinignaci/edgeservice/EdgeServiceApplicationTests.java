@@ -16,8 +16,8 @@ class EdgeServiceApplicationTests {
 	private static final int REDIS_PORT = 6379;
 
 	@Test
-	@SuppressWarnings("uncheked")
 	void contextLoads() {
+		// this is used to load spring test context
 	}
 
 	@Container
