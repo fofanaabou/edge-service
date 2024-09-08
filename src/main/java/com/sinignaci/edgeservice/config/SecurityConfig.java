@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .build();
     }
 
+    @Bean
     WebFilter csrfWebFilter() {
         return (exchange, chain) -> {
             exchange.getResponse().beforeCommit(() -> Mono.defer(() -> {
