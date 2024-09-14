@@ -23,8 +23,8 @@ public class SecurityConfig {
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, ReactiveClientRegistrationRepository clientRegistrationRepository) {
-        return http.addFilterBefore(csrfWebFilter(), SecurityWebFiltersOrder.CSRF)
-                        .authorizeExchange(exchange -> exchange
+        return http.authorizeExchange(exchange -> exchange
+                        .pathMatchers("/actuator/**").permitAll()
                         .pathMatchers("/", "/*.css", "/*.js", "/favicon.ico")
                         .permitAll()
                         .pathMatchers(HttpMethod.GET, "/books/**")
