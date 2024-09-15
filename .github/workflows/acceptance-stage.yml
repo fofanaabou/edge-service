@@ -1,7 +1,7 @@
-name: Acceptance Stage
+name: Acceptance stage
 on:
   workflow_run:
-    workflows: [ 'commit-stage' ]
+    workflows: [ 'Commit Stage' ]
     types: [ completed ]
     branches: master
 concurrency: acceptance
